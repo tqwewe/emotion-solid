@@ -1,4 +1,4 @@
-import { createMemo, mergeProps } from 'solid-js'
+import { Component, createMemo, mergeProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 import { serializeStyles } from '@emotion/serialize'
@@ -43,9 +43,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
     shouldForwardProp || getDefaultShouldForwardProp(baseTag)
   const shouldUseAs = !defaultShouldForwardProp('as')
 
-  return function <Props>(
-    ...args: (object | ((props: Props) => object))[]
-  ): PrivateStyledComponent<Props> {
+  return function <Props>(...args: (object | ((props: Props) => object))[]) {
     let styles: any[] =
       isReal && tag.__emotion_styles !== undefined
         ? tag.__emotion_styles.slice(0)
@@ -77,9 +75,9 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       }
     }
 
-    const Styled: PrivateStyledComponent<Props> = withEmotionCache(
-      (props: Props, cache: any, ref: any) => {
-        const finalTag = (shouldUseAs && (props as any).as) || baseTag
+    const Styled = withEmotionCache<Props & { as?: string }, any>(
+      (props, cache, ref) => {
+        const finalTag = (shouldUseAs && props.as) || baseTag
 
         let classInterpolations: string[] = []
 
@@ -89,12 +87,12 @@ const createStyled = (tag: any, options?: StyledOptions) => {
 
           const serialized = serializeStyles(
             styles.concat(classInterpolations),
-            cache.registered,
+            cache?.registered!,
             mergedProps
           )
 
           const rules = insertStyles(
-            cache,
+            cache!,
             serialized,
             typeof finalTag === 'string'
           )
@@ -108,7 +106,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
 
           if (typeof (props as any).className === 'string') {
             className = getRegisteredStyles(
-              cache.registered,
+              cache?.registered!,
               classInterpolations,
               (props as any).className
             )
@@ -118,7 +116,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
 
           const rulesSerialized = getRules()
 
-          className += `${cache.key}-${rulesSerialized.serialized.name}`
+          className += `${cache?.key}-${rulesSerialized.serialized.name}`
           if (targetClassName !== undefined) {
             className += ` ${targetClassName}`
           }
@@ -170,9 +168,9 @@ const createStyled = (tag: any, options?: StyledOptions) => {
             <>
               <style
                 {...{
-                  [`data-emotion`]: `${cache.key} ${serializedNames}`,
+                  [`data-emotion`]: `${cache?.key} ${serializedNames}`,
                   dangerouslySetInnerHTML: { __html: rulesSerialized.rules },
-                  nonce: cache.sheet.nonce,
+                  nonce: cache?.sheet.nonce,
                 }}
               />
               {ele}
@@ -228,7 +226,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       )
     }
 
-    return Styled
+    return Styled as Component<Props & { as?: string }>
   }
 }
 

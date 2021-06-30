@@ -18,7 +18,7 @@ let EmotionCacheContext = /* #__PURE__ */ createContext(
 
 export let CacheProvider = EmotionCacheContext.Provider
 
-let withEmotionCache: any = function withEmotionCache<Props, Ref>(
+let withEmotionCache = function withEmotionCache<Props, Ref>(
   func: (props: Props, cache: EmotionCache | null, ref: Ref) => JSX.Element
 ) {
   return (props: Props, ref: Ref) => {
@@ -30,7 +30,7 @@ let withEmotionCache: any = function withEmotionCache<Props, Ref>(
 }
 
 if (!isBrowser) {
-  withEmotionCache = function withEmotionCache<Props>(
+  ;(withEmotionCache as any) = function withEmotionCache<Props>(
     func: (props: Props, cache: EmotionCache | null) => JSX.Element
   ) {
     return (props: Props) => {

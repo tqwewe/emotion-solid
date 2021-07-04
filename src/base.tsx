@@ -75,112 +75,115 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       }
     }
 
-    const Styled = withEmotionCache<Props & { as?: string }, any>(
-      (props, cache, ref) => {
-        const finalTag = (shouldUseAs && props.as) || baseTag
+    const Styled = withEmotionCache<
+      Props & { as?: string; class?: string },
+      any
+    >((props, cache, ref) => {
+      const finalTag = (shouldUseAs && props.as) || baseTag
 
-        let classInterpolations: string[] = []
+      let classInterpolations: string[] = []
 
-        const getRules = createMemo(() => {
-          Object.values(props)
-          let mergedProps: Record<string, any> = mergeProps(props)
+      const getRules = createMemo(() => {
+        Object.values(props)
+        let mergedProps: Record<string, any> = mergeProps(props)
 
-          const serialized = serializeStyles(
-            styles.concat(classInterpolations),
-            cache?.registered!,
-            mergedProps
-          )
-
-          const rules = insertStyles(
-            cache!,
-            serialized,
-            typeof finalTag === 'string'
-          )
-
-          return { rules, serialized }
-        })
-
-        const className = createMemo(() => {
-          Object.values(props)
-          let className = ''
-
-          if (typeof (props as any).className === 'string') {
-            className = getRegisteredStyles(
-              cache?.registered!,
-              classInterpolations,
-              (props as any).className
-            )
-          } else if ((props as any).className != null) {
-            className = `${(props as any).className} `
-          }
-
-          const rulesSerialized = getRules()
-
-          className += `${cache?.key}-${rulesSerialized.serialized.name}`
-          if (targetClassName !== undefined) {
-            className += ` ${targetClassName}`
-          }
-
-          return className
-        })
-
-        // const finalShouldForwardProp =
-        //   shouldUseAs && shouldForwardProp === undefined
-        //     ? getDefaultShouldForwardProp(finalTag)
-        //     : defaultShouldForwardProp
-
-        let newProps: Record<string, any> = mergeProps(props)
-
-        // for (let key in props) {
-        // if (key === 'className' || key === 'ref') continue
-
-        // if (shouldUseAs && key === 'as') {
-        //   delete newProps[key]
-        //   continue
-        // }
-
-        // if (!finalShouldForwardProp(key)) {
-        //   delete newProps[key]
-        //   // newProps[key] = (props as any)[key]
-        // }
-        // }
-
-        // newProps.className = className
-        // newProps.ref = ref
-
-        const ele = (
-          <Dynamic
-            component={finalTag}
-            {...newProps}
-            className={className()}
-            ref={ref}
-          />
+        const serialized = serializeStyles(
+          styles.concat(classInterpolations),
+          cache?.registered!,
+          mergedProps
         )
-        if (!isBrowser && getRules().rules !== undefined) {
-          const rulesSerialized = getRules()
-          let serializedNames = rulesSerialized.serialized.name
-          let next = rulesSerialized.serialized.next
-          while (next !== undefined) {
-            serializedNames += ' ' + next.name
-            next = next.next
-          }
-          return (
-            <>
-              <style
-                {...{
-                  [`data-emotion`]: `${cache?.key} ${serializedNames}`,
-                  dangerouslySetInnerHTML: { __html: rulesSerialized.rules },
-                  nonce: cache?.sheet.nonce,
-                }}
-              />
-              {ele}
-            </>
+
+        const rules = insertStyles(
+          cache!,
+          serialized,
+          typeof finalTag === 'string'
+        )
+
+        return { rules, serialized }
+      })
+
+      const className = createMemo(() => {
+        Object.values(props)
+        let className = ''
+
+        if (typeof (props as any).className === 'string') {
+          className = getRegisteredStyles(
+            cache?.registered!,
+            classInterpolations,
+            (props as any).className
           )
+        } else if ((props as any).className != null) {
+          className = `${(props as any).className} `
         }
 
-        return ele
+        const rulesSerialized = getRules()
+
+        className += `${cache?.key}-${rulesSerialized.serialized.name}`
+        if (targetClassName !== undefined) {
+          className += ` ${targetClassName}`
+        }
+
+        return className
+      })
+
+      // const finalShouldForwardProp =
+      //   shouldUseAs && shouldForwardProp === undefined
+      //     ? getDefaultShouldForwardProp(finalTag)
+      //     : defaultShouldForwardProp
+
+      let newProps: Record<string, any> = mergeProps(props)
+
+      // for (let key in props) {
+      // if (key === 'className' || key === 'ref') continue
+
+      // if (shouldUseAs && key === 'as') {
+      //   delete newProps[key]
+      //   continue
+      // }
+
+      // if (!finalShouldForwardProp(key)) {
+      //   delete newProps[key]
+      //   // newProps[key] = (props as any)[key]
+      // }
+      // }
+
+      // newProps.className = className
+      // newProps.ref = ref
+
+      const ele = (
+        <Dynamic
+          component={finalTag}
+          {...newProps}
+          className={
+            props.class ? `${className()} ${props.class}` : className()
+          }
+          ref={ref}
+        />
+      )
+      if (!isBrowser && getRules().rules !== undefined) {
+        const rulesSerialized = getRules()
+        let serializedNames = rulesSerialized.serialized.name
+        let next = rulesSerialized.serialized.next
+        while (next !== undefined) {
+          serializedNames += ' ' + next.name
+          next = next.next
+        }
+        return (
+          <>
+            <style
+              {...{
+                [`data-emotion`]: `${cache?.key} ${serializedNames}`,
+                dangerouslySetInnerHTML: { __html: rulesSerialized.rules },
+                nonce: cache?.sheet.nonce,
+              }}
+            />
+            {ele}
+          </>
+        )
       }
-    )
+
+      return ele
+    })
 
     // Styled.displayName =
     //   identifierName !== undefined
@@ -226,7 +229,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       )
     }
 
-    return Styled as Component<Props & { as?: string }>
+    return Styled as Component<Props & { as?: string; class?: string }>
   }
 }
 

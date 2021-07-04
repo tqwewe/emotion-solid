@@ -1,6 +1,6 @@
 {
   "name": "emotion-solid",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Emotion JS support for Solid JS projects.",
   "repository": "git@github.com:Acidic9/emotion-solid.git",
   "author": "Ari Seyhun <ariseyhun@live.com.au>",

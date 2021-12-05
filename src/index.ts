@@ -1,6 +1,7 @@
 import { createStyled } from './base'
 import { tags } from './tags'
 import { css } from './css'
+import { keyframes } from './keyframes'
 
 // bind it to avoid mutating the original function
 // @ts-ignore
@@ -10,4 +11,4 @@ tags.forEach((tagName: any) => {
   ;(styled as any)[tagName] = styled(tagName)
 })
 
-export { css }
+export { css, keyframes }

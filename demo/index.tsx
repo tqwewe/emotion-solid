@@ -1,5 +1,17 @@
 import { render } from 'solid-js/web'
-import { styled, css } from '../src'
+import { styled, css, keyframes } from '../src'
+
+const progress = keyframes`
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
+  }
+`;
 
 const section = css`
   background-color: #f6f8fa;
@@ -12,6 +24,12 @@ const StyledSection = styled('div')`
   padding: 20px;
 `
 
+const Animation = styled('div')`
+  height: 20px;
+  background-color: #007cd3;
+  animation: ${progress} 2s linear infinite;
+`;
+
 function App() {
   return (
     <div>
@@ -20,6 +38,7 @@ function App() {
         <p>
           This is a section created with <code>styled</code> function.
         </p>
+        <Animation />
       </StyledSection>
     </div>
   )

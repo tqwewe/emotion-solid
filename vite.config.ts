@@ -3,8 +3,7 @@ import solidPlugin from 'vite-plugin-solid'
 
 export default defineConfig({
   root: './demo',
-  // TOOD: Removing `hot` will crash dev environment.
-  plugins: [solidPlugin({hot: false})],
+  plugins: [solidPlugin()],
   build: {
     target: 'esnext',
     polyfillDynamicImport: false,

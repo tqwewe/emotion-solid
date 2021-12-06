@@ -11,24 +11,24 @@ const progress = keyframes`
   100% {
     width: 0;
   }
-`;
+`
 
 const section = css`
   background-color: #f6f8fa;
   color: #333;
 `
 
-const StyledSection = styled('div')`
+const StyledSection = styled.div`
   ${section}
   margin: 20px 0;
   padding: 20px;
 `
 
-const Animation = styled('div')`
+const Animation = styled.div`
   height: 20px;
   background-color: #007cd3;
   animation: ${progress} 2s linear infinite;
-`;
+`
 
 function App() {
   return (

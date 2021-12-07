@@ -9,7 +9,6 @@ import {
   getDefaultShouldForwardProp,
   composeShouldForwardProps,
   StyledOptions,
-  PrivateStyledComponent,
   StyledElementType,
 } from './utils'
 
@@ -223,14 +222,12 @@ const createStyled = (tag: any, options?: StyledOptions) => {
           nextOptions,
           true
         ),
-      })(
-        // @ts-ignore
-        ...styles
-      )
+      })(...styles)
     }
 
     return Styled as Component<Props & { as?: string; class?: string }>
   }
 }
 
-export default createStyled
+// Don't use default export: https://github.com/solidjs/solid/issues/744
+export { createStyled }

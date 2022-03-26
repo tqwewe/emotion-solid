@@ -103,7 +103,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       const getRules = createMemo(() => {
         let mergedProps: Record<string, any> = mergeProps(props)
 
-        const [_, registeredStyles] = getClassNameAndRegisteredStyles();
+        const [_, registeredStyles] = getClassNameAndRegisteredStyles()
         const serialized = serializeStyles(
           styles.concat(classInterpolations),
           registeredStyles,
@@ -120,7 +120,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       })
 
       const className = createMemo(() => {
-        let [className, _] = getClassNameAndRegisteredStyles();
+        let [className, _] = getClassNameAndRegisteredStyles()
 
         const rulesSerialized = getRules()
 

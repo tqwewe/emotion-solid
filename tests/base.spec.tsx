@@ -1,28 +1,6 @@
-import { hydrate as solidHydrate, render as solidRender } from "solid-js/web";
-import { JSX, createSignal } from "solid-js";
-import { styled } from "../src/index";
-
-interface Options {
-  hydrate?: boolean;
-}
-
-interface Result {
-  element: Element,
-  cleanup: () => void
-}
-
-function render(component: () => JSX.Element, {hydrate}: Options = {}): Result {
-  const container = document.body.appendChild(document.createElement("div"));
-
-  const dispose = hydrate
-    ? ((solidHydrate(component, container) as unknown) as () => void)
-    : solidRender(component, container);
-
-  return {
-    element: container.firstElementChild,
-    cleanup: dispose
-  }
-};
+import { createSignal } from 'solid-js';
+import { styled } from '../src/index';
+import { render } from './helper';
 
 const Component = styled('div')({
   backgroundColor: 'white',

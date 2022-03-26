@@ -14,6 +14,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "noEmit": false,
+    "types": ["jest"],
     "jsx": "preserve",
     "jsxImportSource": "solid-js"
   },

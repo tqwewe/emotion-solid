@@ -1,5 +1,6 @@
 import styledImport from './base'
 import { tags } from './tags'
+export { ThemeProvider, useTheme } from './theme';
 
 // bind it to avoid mutating the original function
 // @ts-ignore

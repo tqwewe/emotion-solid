@@ -5,6 +5,7 @@ import { serializeStyles } from '@emotion/serialize'
 import { getRegisteredStyles, insertStyles, RegisteredCache } from '@emotion/utils'
 
 import { withEmotionCache } from './context'
+import { useTheme } from './theme'
 import {
   getDefaultShouldForwardProp,
   composeShouldForwardProps,
@@ -101,7 +102,12 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       })
 
       const getRules = createMemo(() => {
-        let mergedProps: Record<string, any> = mergeProps(props)
+        let mergedProps: Record<string, any> = mergeProps(
+          props,
+          {
+            get theme() {return useTheme()}
+          }
+        )
 
         const [_, registeredStyles] = getClassNameAndRegisteredStyles()
         const serialized = serializeStyles(
@@ -137,7 +143,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       //     ? getDefaultShouldForwardProp(finalTag)
       //     : defaultShouldForwardProp
 
-      let newProps: Record<string, any> = mergeProps(props)
+      const newProps: Record<string, any> = mergeProps(props)
 
       // for (let key in props) {
       // if (key === 'className' || key === 'ref') continue

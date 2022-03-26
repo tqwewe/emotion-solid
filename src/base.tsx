@@ -84,7 +84,6 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       let classInterpolations: string[] = []
 
       const getRules = createMemo(() => {
-        Object.values(props)
         let mergedProps: Record<string, any> = mergeProps(props)
 
         const serialized = serializeStyles(
@@ -103,7 +102,6 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       })
 
       const className = createMemo(() => {
-        Object.values(props)
         let className = ''
 
         if (typeof (props as any).className === 'string') {

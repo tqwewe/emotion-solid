@@ -1,12 +1,12 @@
 import { useContext, createContext, Component } from 'solid-js';
 
-const ThemeContext = createContext({});
+const ThemeContext = createContext(() => ({}));
 
 export function useTheme(): any {
-  return useContext(ThemeContext);
+  return useContext(ThemeContext)();
 }
 
-export const ThemeProvider: Component<{theme: any}> = (props) => {
+export const ThemeProvider: Component<{theme: () => any}> = (props) => {
   return (
     <ThemeContext.Provider value={props.theme}>
       {props.children}

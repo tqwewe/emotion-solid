@@ -78,7 +78,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
     const Styled = withEmotionCache<
       Props & { as?: string; class?: string },
       any
-    >((props, cache, ref) => {
+    >((props, cache) => {
       const finalTag = (shouldUseAs && props.as) || baseTag
 
       let classInterpolations: string[] = []
@@ -156,14 +156,13 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       // newProps.className = className
       // newProps.ref = ref
 
-      const ele = (
+      const element = (
         <Dynamic
           component={finalTag}
           {...newProps}
           className={
             props.class ? `${className()} ${props.class}` : className()
           }
-          ref={ref}
         />
       )
       if (!isBrowser && getRules().rules !== undefined) {
@@ -183,12 +182,12 @@ const createStyled = (tag: any, options?: StyledOptions) => {
                 nonce: cache?.sheet.nonce,
               }}
             />
-            {ele}
+            {element}
           </>
         )
       }
 
-      return ele
+      return element
     })
 
     // Styled.displayName =

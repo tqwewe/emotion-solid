@@ -57,6 +57,12 @@ describe('styled', () => {
     expect(child.mock.calls.length).toBe(1); // Called exactly once
   });
 
+  it('supports ref arguments', () => {
+    let elementRef;
+    const {element} = render(() => <Component ref={elementRef} />, {});
+    expect(elementRef).toEqual(element);
+  });
+
   describe('extending', () => {
     it('works without props', () => {
       const ExtendingComponent = styled(Component)({
@@ -93,6 +99,13 @@ describe('styled', () => {
       child.mockReturnValue('Hello world text!')
       const {element} = render(() => <ExtendingComponent>{child}</ExtendingComponent>, {});
       expect(child.mock.calls.length).toBe(1); // Called exactly once
+    });
+
+    it('supports ref arguments', () => {
+      const ExtendingComponent = styled(Component)({});
+      let elementRef;
+      const {element} = render(() => <ExtendingComponent ref={elementRef} />, {});
+      expect(elementRef).toEqual(element);
     });
   });
 })

@@ -19,13 +19,13 @@ let EmotionCacheContext = /* #__PURE__ */ createContext(
 export let CacheProvider = EmotionCacheContext.Provider
 
 let withEmotionCache = function withEmotionCache<Props, Ref>(
-  func: (props: Props, cache: EmotionCache | null, ref: Ref) => JSX.Element
+  func: (props: Props, cache: EmotionCache | null) => JSX.Element
 ) {
-  return (props: Props, ref: Ref) => {
+  return (props: Props) => {
     // the cache will never be null in the browser
     let cache = useContext(EmotionCacheContext) as any as EmotionCache
 
-    return func(props, cache, ref)
+    return func(props, cache)
   }
 }
 

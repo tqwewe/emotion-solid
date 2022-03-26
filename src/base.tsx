@@ -2,7 +2,7 @@ import { Component, createMemo, mergeProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 import { serializeStyles } from '@emotion/serialize'
-import { getRegisteredStyles, insertStyles } from '@emotion/utils'
+import { getRegisteredStyles, insertStyles, RegisteredCache } from '@emotion/utils'
 
 import { withEmotionCache } from './context'
 import {
@@ -83,12 +83,30 @@ const createStyled = (tag: any, options?: StyledOptions) => {
 
       let classInterpolations: string[] = []
 
+      const getClassNameAndRegisteredStyles = createMemo<[string, RegisteredCache]>(() => {
+        if (typeof (props as any).className === 'string') {
+          // Note that the below function is not just getter
+          // and it also inserts the rules to stylesheet
+          const className = getRegisteredStyles(
+            cache?.registered!,
+            classInterpolations,
+            (props as any).className
+          )
+          return [className, cache?.registered!]
+        } else if ((props as any).className != null) {
+          const className = `${(props as any).className} `
+          return [className, {}]
+        }
+        return ['', {}]
+      })
+
       const getRules = createMemo(() => {
         let mergedProps: Record<string, any> = mergeProps(props)
 
+        const [_, registeredStyles] = getClassNameAndRegisteredStyles();
         const serialized = serializeStyles(
           styles.concat(classInterpolations),
-          cache?.registered!,
+          registeredStyles,
           mergedProps
         )
 
@@ -102,17 +120,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       })
 
       const className = createMemo(() => {
-        let className = ''
-
-        if (typeof (props as any).className === 'string') {
-          className = getRegisteredStyles(
-            cache?.registered!,
-            classInterpolations,
-            (props as any).className
-          )
-        } else if ((props as any).className != null) {
-          className = `${(props as any).className} `
-        }
+        let [className, _] = getClassNameAndRegisteredStyles();
 
         const rulesSerialized = getRules()
 

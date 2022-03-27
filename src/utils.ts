@@ -18,7 +18,7 @@ export type ElementType<P = any> =
     }[keyof JSX.IntrinsicElements]
   | Component<P>
 
-export type Interpolations<Props> = Array<(object | ((props: Props & { theme: any }) => object))>;
+export type Interpolations<Props extends object> = Array<(object | ((props: Props & { theme: any }) => object))>;
 
 
 export type StyledElementType<Props> =
@@ -82,12 +82,12 @@ export const composeShouldForwardProps = (
   return shouldForwardProp
 }
 
-export type CreateStyledComponent = <Props>(
+export type CreateStyledComponent = <Props extends object>(
   ...args: Interpolations<Props>
 ) => StyledComponent<Props>
 
 export type CreateStyled = {
-  <Props>(tag: StyledElementType<Props>, options?: StyledOptions): (
+  <Props extends object>(tag: StyledElementType<Props>, options?: StyledOptions): (
     ...args: Interpolations<Props>
   ) => StyledComponent<Props>
   [key: string]: CreateStyledComponent
@@ -100,5 +100,5 @@ export interface StyledOtherComponent<Props extends object, InnerProps extends o
 
 export interface CreateStyledFunction {
   <T extends keyof JSX.IntrinsicElements>(tag: T, options?: StyledOptions): <Props extends object>(...args: Interpolations<Props>) => StyledOtherComponent<Props, JSX.IntrinsicElements[T]>
-  <T extends Component>(tag: T, options?: StyledOptions): <Props extends object>(...args: Interpolations<Props>) => StyledOtherComponent<Props, T>
+    <InnerProps extends object>(tag: Component<InnerProps>, options?: StyledOptions): <Props extends object>(...args: Interpolations<Props>) => StyledOtherComponent<Props, InnerProps>
 }

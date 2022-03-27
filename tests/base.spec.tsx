@@ -16,6 +16,19 @@ describe('styled', () => {
     expect(window.getComputedStyle(element)['background-color']).toEqual('white');
   });
 
+  it('outputs children as is', () => {
+    const {element} = render(() => <Component>Test</Component>);
+    expect(element.textContent).toEqual('Test');
+  });
+
+  it('passes attributes to element itself', () => {
+    const Link = styled('a')({
+      backgroundColor: 'white',
+    });
+    const {element} = render(() => <Link href="cool">Test</Link>, {});
+    expect(element.getAttribute('href')).toEqual('cool');
+  });
+
   it('works with interpolated style property', () => {
     const {element} = render(() => <InterpolatingComponent value={true} />, {});
     expect(window.getComputedStyle(element)['background-color']).toEqual('red');

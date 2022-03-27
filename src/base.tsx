@@ -12,6 +12,7 @@ import {
   StyledOptions,
   PrivateStyledComponent,
   StyledElementType,
+  CreateStyledFunction,
 } from './utils'
 
 const ILLEGAL_ESCAPE_SEQUENCE_ERROR = `You have illegal escape sequence in your template literal, most likely inside content's property value.
@@ -21,7 +22,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
 
 const isBrowser = typeof document !== 'undefined'
 
-const createStyled = (tag: any, options?: StyledOptions) => {
+const createStyled: CreateStyledFunction = (tag: any, options?: StyledOptions) => {
   if (process.env.NODE_ENV !== 'production') {
     if (tag === undefined) {
       throw new Error(
@@ -44,7 +45,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
     shouldForwardProp || getDefaultShouldForwardProp(baseTag)
   const shouldUseAs = !defaultShouldForwardProp('as')
 
-  return function <Props>(...args: (object | ((props: Props) => object))[]) {
+  return function <Props>(...args: (object | ((props: Props & {theme: any}) => object))[]) {
     let styles: any[] =
       isReal && tag.__emotion_styles !== undefined
         ? tag.__emotion_styles.slice(0)
@@ -77,8 +78,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
     }
 
     const Styled = withEmotionCache<
-      Props & { as?: string; class?: string },
-      any
+      Props & { as?: string; class?: string }
     >((props, cache) => {
       const finalTag = (shouldUseAs && props.as) || baseTag
 

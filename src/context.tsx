@@ -18,7 +18,7 @@ let EmotionCacheContext = /* #__PURE__ */ createContext(
 
 export let CacheProvider = EmotionCacheContext.Provider
 
-let withEmotionCache = function withEmotionCache<Props, Ref>(
+let withEmotionCache = function withEmotionCache<Props>(
   func: (props: Props, cache: EmotionCache | null) => JSX.Element
 ) {
   return (props: Props) => {

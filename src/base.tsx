@@ -2,15 +2,17 @@ import { Component, createMemo, mergeProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 import { serializeStyles } from '@emotion/serialize'
-import { getRegisteredStyles, insertStyles } from '@emotion/utils'
+import { getRegisteredStyles, insertStyles, RegisteredCache } from '@emotion/utils'
 
 import { withEmotionCache } from './context'
+import { useTheme } from './theme'
 import {
   getDefaultShouldForwardProp,
   composeShouldForwardProps,
   StyledOptions,
   PrivateStyledComponent,
   StyledElementType,
+  CreateStyledFunction,
 } from './utils'
 
 const ILLEGAL_ESCAPE_SEQUENCE_ERROR = `You have illegal escape sequence in your template literal, most likely inside content's property value.
@@ -20,7 +22,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
 
 const isBrowser = typeof document !== 'undefined'
 
-const createStyled = (tag: any, options?: StyledOptions) => {
+const createStyled: CreateStyledFunction = (tag: any, options?: StyledOptions) => {
   if (process.env.NODE_ENV !== 'production') {
     if (tag === undefined) {
       throw new Error(
@@ -43,7 +45,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
     shouldForwardProp || getDefaultShouldForwardProp(baseTag)
   const shouldUseAs = !defaultShouldForwardProp('as')
 
-  return function <Props>(...args: (object | ((props: Props) => object))[]) {
+  return function <Props>(...args: (object | ((props: Props & {theme: any}) => object))[]) {
     let styles: any[] =
       isReal && tag.__emotion_styles !== undefined
         ? tag.__emotion_styles.slice(0)
@@ -76,20 +78,41 @@ const createStyled = (tag: any, options?: StyledOptions) => {
     }
 
     const Styled = withEmotionCache<
-      Props & { as?: string; class?: string },
-      any
-    >((props, cache, ref) => {
+      Props & { as?: string; class?: string }
+    >((props, cache) => {
       const finalTag = (shouldUseAs && props.as) || baseTag
 
       let classInterpolations: string[] = []
 
-      const getRules = createMemo(() => {
-        Object.values(props)
-        let mergedProps: Record<string, any> = mergeProps(props)
+      const getClassNameAndRegisteredStyles = createMemo<[string, RegisteredCache]>(() => {
+        if (typeof (props as any).className === 'string') {
+          // Note that the below function is not just getter
+          // and it also inserts the rules to stylesheet
+          const className = getRegisteredStyles(
+            cache?.registered!,
+            classInterpolations,
+            (props as any).className
+          )
+          return [className, cache?.registered!]
+        } else if ((props as any).className != null) {
+          const className = `${(props as any).className} `
+          return [className, {}]
+        }
+        return ['', {}]
+      })
 
+      const getRules = createMemo(() => {
+        let mergedProps: Record<string, any> = mergeProps(
+          props,
+          {
+            get theme() {return useTheme()}
+          }
+        )
+
+        const [_, registeredStyles] = getClassNameAndRegisteredStyles()
         const serialized = serializeStyles(
           styles.concat(classInterpolations),
-          cache?.registered!,
+          registeredStyles,
           mergedProps
         )
 
@@ -103,18 +126,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       })
 
       const className = createMemo(() => {
-        Object.values(props)
-        let className = ''
-
-        if (typeof (props as any).className === 'string') {
-          className = getRegisteredStyles(
-            cache?.registered!,
-            classInterpolations,
-            (props as any).className
-          )
-        } else if ((props as any).className != null) {
-          className = `${(props as any).className} `
-        }
+        let [className, _] = getClassNameAndRegisteredStyles()
 
         const rulesSerialized = getRules()
 
@@ -131,7 +143,7 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       //     ? getDefaultShouldForwardProp(finalTag)
       //     : defaultShouldForwardProp
 
-      let newProps: Record<string, any> = mergeProps(props)
+      const newProps: Record<string, any> = mergeProps(props)
 
       // for (let key in props) {
       // if (key === 'className' || key === 'ref') continue
@@ -150,14 +162,13 @@ const createStyled = (tag: any, options?: StyledOptions) => {
       // newProps.className = className
       // newProps.ref = ref
 
-      const ele = (
+      const element = (
         <Dynamic
           component={finalTag}
           {...newProps}
           className={
             props.class ? `${className()} ${props.class}` : className()
           }
-          ref={ref}
         />
       )
       if (!isBrowser && getRules().rules !== undefined) {
@@ -177,12 +188,12 @@ const createStyled = (tag: any, options?: StyledOptions) => {
                 nonce: cache?.sheet.nonce,
               }}
             />
-            {ele}
+            {element}
           </>
         )
       }
 
-      return ele
+      return element
     })
 
     // Styled.displayName =

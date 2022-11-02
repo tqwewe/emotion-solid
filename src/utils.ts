@@ -18,7 +18,8 @@ export type ElementType<P = any> =
     }[keyof JSX.IntrinsicElements]
   | Component<P>
 
-export type Interpolations = Array<any>
+export type Interpolations<Props extends object> = Array<(object | ((props: Props & { theme: any }) => object))>;
+
 
 export type StyledElementType<Props> =
   | string
@@ -81,14 +82,23 @@ export const composeShouldForwardProps = (
   return shouldForwardProp
 }
 
-export type CreateStyledComponent = <Props>(
-  ...args: Interpolations
+export type CreateStyledComponent = <Props extends object>(
+  ...args: Interpolations<Props>
 ) => StyledComponent<Props>
 
 export type CreateStyled = {
-  <Props>(tag: StyledElementType<Props>, options?: StyledOptions): (
-    ...args: Interpolations
+  <Props extends object>(tag: StyledElementType<Props>, options?: StyledOptions): (
+    ...args: Interpolations<Props>
   ) => StyledComponent<Props>
   [key: string]: CreateStyledComponent
   // bind: () => CreateStyled
+}
+
+// The following code is inspired by create-emotion-styled
+
+export interface StyledOtherComponent<Props extends object, InnerProps extends object> extends Component<Props & InnerProps & { as?: string; class?: string }> {}
+
+export interface CreateStyledFunction {
+  <T extends keyof JSX.IntrinsicElements>(tag: T, options?: StyledOptions): <Props extends object>(...args: Interpolations<Props>) => StyledOtherComponent<Props, JSX.IntrinsicElements[T]>
+    <InnerProps extends object>(tag: Component<InnerProps>, options?: StyledOptions): <Props extends object>(...args: Interpolations<Props>) => StyledOtherComponent<Props, InnerProps>
 }

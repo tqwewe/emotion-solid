@@ -184,10 +184,9 @@ const createStyled: CreateStyledFunction = (tag: any, options?: StyledOptions) =
             <style
               {...{
                 [`data-emotion`]: `${cache?.key} ${serializedNames}`,
-                dangerouslySetInnerHTML: { __html: rulesSerialized.rules },
                 nonce: cache?.sheet.nonce,
               }}
-            />
+            >{`${rulesSerialized.rules}`}</style>
             {element}
           </>
         )

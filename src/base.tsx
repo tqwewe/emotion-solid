@@ -30,7 +30,8 @@ const createStyled: CreateStyledFunction = (tag: any, options?: StyledOptions) =
       )
     }
   }
-  const isReal = tag.__emotion_real === tag
+  // tag.__emotion_real has never been assigned a value but is preventing from previous tag styles from getting into this one
+  const isReal = true // tag.__emotion_real === tag
   const baseTag = (isReal && tag.__emotion_base) || tag
 
   let identifierName: string | undefined
